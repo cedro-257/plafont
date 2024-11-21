@@ -1,5 +1,9 @@
-# blog/templates/blog/home.html
+
 {% extends 'base.html' %}
 {% block content %}
-    <p>Vous êtes connecté !</p>
+<h2>Photos</h2>
+{% for photo in photos %}
+    <img src="{{ photo.image.url }}">
+    <p>{{ photo.caption }}</p>
+    {% endfor %}
 {% endblock content %}

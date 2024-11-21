@@ -4,7 +4,11 @@
     </head>
     <body>
         <h1>FotoBlog</h1>
-        {% block content %}{% endblock content %}
+        {% block content %}
+        <p><a href="{% url 'home' %}">Accueil</a></p>
+        <p><a href="{% url 'blog_create' %}">Écrire un billet</a></p>
+        <p><a href="{% url 'photo_upload' %}">Télécharger une photo</a></p>
+        {% endblock %}
         {% if user.is_authenticated %}
             <p>Vous etes connecte en tant que {{ request.user }}. <a href="{% url 'logout' %}">Se déconnecter</a></p>
         {% endif %}
