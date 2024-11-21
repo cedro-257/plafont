@@ -84,8 +84,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL = 'login'
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -130,3 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #media_root: le chemin de emplacement de media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.joinpath('media/')
+LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = 'login'

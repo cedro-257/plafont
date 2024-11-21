@@ -25,6 +25,7 @@ class LoginPage(View):
         
     def post(self, request):
         form = self.form_class(request.POST)
+        message = ''
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'],
@@ -37,11 +38,12 @@ class LoginPage(View):
                     message = f'Bonjour, {user.username}! Vous êtes connecté.'
             else:
                 message = 'Identifiants invalides.'
-                return render(
-        request, self.template_name, context={'form': form, 'message': message})   
+        return render(
+                request, self.template_name, context={'form': form, 'message': message})   
 
 
 def home(request):
+    photos = models.Photo.objects.all()
     return render(request, 'blog/home.html'),
 
 def signup_page(request):
