@@ -16,6 +16,10 @@ class Photo(models.Model):
         #sauvegarder de l'image redimensionner dans le systemes des fichiers
         #ce 'est pas la methodes save() du modele
         image.save(self.image.path)
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.resize_image()
         
 class Blog(models.Model):
     photo = models.ForeignKey(Photo, null=True, on_delete=models.SET_NULL, blank=True)

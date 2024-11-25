@@ -1,15 +1,12 @@
 
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
 
-from . import forms, models
+from . import forms , models
 
-
-# Create your views here.
-
-
-@login_required
+# Create your views here.@login_required
+@permission_required('blog.add_photo', raise_exception=True)
 def photo_upload(request):
     form = forms.PhotoForm()
     if request.method == 'POST':
@@ -49,12 +46,13 @@ def blog_and_photo_upload(request):
 def view_blog(request, blog_id):
     blog = get_object_or_404(models.Blog, id=blog_id)
     return render(request, 'blog/view_blog.html', {'blog': blog})
-
 @login_required
 def home(request):
     photos = models.Photo.objects.all()
     blogs = models.Blog.objects.all()
     return render(request, 'blog/home.html', context={'photos': photos, 'blogs': blogs})
+
+
 
 @login_required
 
@@ -79,7 +77,6 @@ def edit_blog(request, blog_id):
         'delete_form': delete_form,
         }
     return render(request, 'blog/edit_blog.html', context=context)
-
 @login_required
 def create_multiple_photos(request):
     PhotoFormSet = formset_factory(forms.PhotoForm, extra=5)
@@ -94,3 +91,13 @@ def create_multiple_photos(request):
                     photo.save()
             return redirect('home')
     return render(request, 'blog/create_multiple_photos.html', {'formset': formset})
+
+@login_required
+def follow_users(request):
+    form = forms.FollowUsersForm(instance=request.user)
+    if request.method == 'POST':
+        form = forms.FollowUsersForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    return render(request, 'blog/follow_users_form.html', context={'form': form})

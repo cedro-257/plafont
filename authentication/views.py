@@ -2,11 +2,13 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import redirect, render
 from django.views.generic import View 
+from django.contrib.auth.views import PasswordChangeView
+from django.urls import reverse_lazy
 # Create your views here.
 
 # import des fonctions login et authenticate
 
-from . import forms 
+from . import forms, models
 
                 
 def logout_user(request):
@@ -39,9 +41,9 @@ class LoginPage(View):
             else:
                 message = 'Identifiants invalides.'
         return render(
-                request, self.template_name, context={'form': form, 'message': message})   
-
-
+                request, self.template_name, context={'form': form, 'message': message})
+        
+        
 def home(request):
     photos = models.Photo.objects.all()
     return render(request, 'blog/home.html'),
@@ -56,3 +58,16 @@ def signup_page(request):
             login(request, user)
             return redirect(settings.LOGIN_REDIRECT_URL)
     return render(request, 'authentication/signup.html', context={'form': form})
+
+def upload_profile_photo(request):
+    form = forms.UploadProfilePhotoForm(instance=request.user)
+    if request.method == 'POST':
+        form = forms.UploadProfilePhotoForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    return render(request, 'upload_profile_photo.html', context={'form': form})
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'custom_password_change.html'
+    success_url = reverse_lazy('password_change_done')
