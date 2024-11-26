@@ -1,9 +1,10 @@
-
+from itertools import chain
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
 
-from . import forms , models
+from django.db.models import Q 
+from . import forms, models
 
 # Create your views here.@login_required
 @permission_required('blog.add_photo', raise_exception=True)
@@ -46,11 +47,18 @@ def blog_and_photo_upload(request):
 def view_blog(request, blog_id):
     blog = get_object_or_404(models.Blog, id=blog_id)
     return render(request, 'blog/view_blog.html', {'blog': blog})
+
 @login_required
 def home(request):
-    photos = models.Photo.objects.all()
-    blogs = models.Blog.objects.all()
-    return render(request, 'blog/home.html', context={'photos': photos, 'blogs': blogs})
+    
+    blogs = models.Blog.objects.filter(
+        Q(contributors__in=request.user.follows.all()) |
+        Q(starred=True)
+        )
+    photos = models.Photo.objects.filter(uploader__in=request.user.follows.all()
+    ).exclude(blog__in=blogs)
+    blogs_and_photos = sorted(chain(blogs, photos), key=lambda instance: instance.date_created, reverse=True)
+    return render(request, 'blog/home.html', context={'blogs_and_photos': blogs_and_photos})
 
 
 
