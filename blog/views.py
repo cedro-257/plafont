@@ -1,4 +1,5 @@
 from itertools import chain
+from django.core.paginator import Paginator
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
@@ -57,8 +58,15 @@ def home(request):
         )
     photos = models.Photo.objects.filter(uploader__in=request.user.follows.all()
     ).exclude(blog__in=blogs)
-    blogs_and_photos = sorted(chain(blogs, photos), key=lambda instance: instance.date_created, reverse=True)
-    return render(request, 'blog/home.html', context={'blogs_and_photos': blogs_and_photos})
+    blogs_and_photos = sorted(chain(blogs, photos),
+    key=lambda instance: instance.date_created, reverse=True)
+    
+    paginator = Paginator(blogs_and_photos, 6)
+    page = request.GET.get('page')
+    page_obj = paginator.get_page(page)
+    context = {'page_obj': page_obj}
+    
+    return render(request, 'blog/home.html', context=context)
 
 
 

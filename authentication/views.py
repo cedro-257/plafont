@@ -66,7 +66,7 @@ def upload_profile_photo(request):
         if form.is_valid():
             form.save()
             return redirect('home')
-    return render(request, 'upload_profile_photo.html', context={'form': form})
+    return render(request, 'authentication/upload_profile_photo.html', context={'form': form})
 
 class CustomPasswordChangeView(PasswordChangeView):
     template_name = 'custom_password_change.html'
